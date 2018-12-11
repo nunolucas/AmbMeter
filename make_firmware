@@ -1,0 +1,10 @@
+#!/bin/bash
+
+function die()
+{
+    exit 1
+}
+
+make all PLATFORM=photon APPDIR=$(pwd) -C ../firmware/main/ || die
+
+echo "run: 'particle flash lince target/AmbMeter.bin' to flash "
