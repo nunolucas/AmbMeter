@@ -4,6 +4,7 @@
 
 #include <Particle.h>
 #include <SparkFunBME280.h>
+#include <PietteTech_DHT.h>
 
 //-----------------------------------------------------------------------------
 // Pins used by the OLED Display (SPI)
@@ -13,6 +14,11 @@
 #define LCD_PIN_CS      A2 /* SPI1_SS   */
 #define LCD_PIN_CLK     A3 /* SPI1_CLK  */
 #define LCD_PIN_DI      A5 /* SPI1_MOSI */
+
+//-----------------------------------------------------------------------------
+// I/O pin used by the DHT11
+
+#define PIN_DHT11_IO    D5
 
 //-----------------------------------------------------------------------------
 
@@ -25,6 +31,7 @@
 enum Mode {
     Init = 0,
     Idle,
+    ReadDHT11,
     LedShow,
     Connected,
 };

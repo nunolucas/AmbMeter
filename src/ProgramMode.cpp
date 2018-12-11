@@ -22,29 +22,14 @@ void ProgramMode::event(Event ev)
         // Can change to ModeLedShow. Start Led show mode.
         if ( ev == Event::ButtonNext )
         {
-            mode_ = Mode::LedShow;
-            // Start LED show
-            RGB.brightness( 0x60 );
-            rgb_ = 0x401020;
-            RGB.color( (rgb_>>16) & 0xFF, (rgb_>>8) & 0xFF, rgb_ & 0xFF );
-        }
-        break;
-    case Mode::LedShow:
-        // Run LED show until ButtonNext event
-        if ( ev == Event::ButtonNext )
-        {
             mode_ = Mode::Connected;
             // ReleaseLedControl()
+            RGB.brightness( 0x40 );
             RGB.control( false );
             // Start WiFi and connect to Cloud
             WiFi.on();
             Particle.connect();
 
-        }
-        else
-        {   // Tick
-            rgb_ = ((rgb_ >> 16) & 0xFF) | ((rgb_ << 8) & 0xFFFF00);
-            RGB.color( (rgb_>>16) & 0xFF, (rgb_>>8) & 0xFF, rgb_ & 0xFF );
         }
         break;
     case Mode::Connected:

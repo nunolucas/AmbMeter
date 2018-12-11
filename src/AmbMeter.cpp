@@ -6,7 +6,12 @@
 //-----------------------------------------------------------------------------
 // Temperature, Pressure & Humidity sensor (I²C via pins D0,1)
 
-BME280          sensor;
+BME280          sensor1;
+
+//-----------------------------------------------------------------------------
+// Temperature & Humidity sensor (signal I/O via pin D5)
+
+PietteTech_DHT  sensor2( PIN_DHT11_IO, DHT11 );
 
 //-----------------------------------------------------------------------------
 // SH1106 OLED 2.8' LCD (SPI1 is implicit)
@@ -46,22 +51,22 @@ void setup()
 
     // Setup GY-BME280 sensor (I²C)
     diag.println( "Starting BME280... " );
-    sensor.settings.commInterface  = I2C_MODE;
-    sensor.settings.I2CAddress     = 0x76;
-    sensor.settings.runMode        = 3;       //  3: Normal mode
-    sensor.settings.tStandby       = 0;       //  0: 0.5ms
-    sensor.settings.filter         = 0;       //  0: filter off
+    sensor1.settings.commInterface  = I2C_MODE;
+    sensor1.settings.I2CAddress     = 0x76;
+    sensor1.settings.runMode        = 3;       //  3: Normal mode
+    sensor1.settings.tStandby       = 0;       //  0: 0.5ms
+    sensor1.settings.filter         = 16;      //  0: filter off
     // Oversampling can be:
     //  0   : skipped
     //  1..5: oversampling *1, *2, *4, *8, *16 respectively
-    sensor.settings.tempOverSample  = 1;
-    sensor.settings.pressOverSample = 1;
-    sensor.settings.humidOverSample = 1;
+    sensor1.settings.pressOverSample = 4;
+    sensor1.settings.tempOverSample  = 1;
+    sensor1.settings.humidOverSample = 0;
     // Calling .begin() causes the settings to be loaded
-    sensor.begin();
+    sensor1.begin();
 
     // Show some diagnostic information about the sensor
-    ShowSensorDiags( sensor );
+    ShowSensorDiags( sensor1 );
 
     // Setup LCD display
     diag.println( "Starting LCD... " );
@@ -92,11 +97,11 @@ void loop() {
     // Start with temperature, as that data is needed for accurate compensation.
     // Reading the temperature updates the compensators of the other functions
     // in the background.
-    double temp  = sensor.readTempC();
-    double hpa   = sensor.readFloatPressure() / 100.0;
-    double alt_m = sensor.readFloatAltitudeMeters();
-    double alt_f = sensor.readFloatAltitudeFeet();
-    double hum   = sensor.readFloatHumidity();
+    double temp  = sensor1.readTempC();
+    double hpa   = sensor1.readFloatPressure() / 100.0;
+    double alt_m = sensor1.readFloatAltitudeMeters();
+    double alt_f = sensor1.readFloatAltitudeFeet();
+    double hum   = sensor1.readFloatHumidity();
 
     // Let ProgramMode state-machine tick away
     mode.tick();
@@ -119,6 +124,11 @@ void loop() {
     if ( millis() - line_timer > 60000 ) {
         line_timer = millis();
         diag.println("");
+
+        sensor2.acquireAndWait();
+        float t = sensor2.getCelsius();
+        float h = sensor2.getHumidity();
+        diag.printf( "DHT11:  %.2f °C  %.2f %rh\r\n", t, h );
     }
 
     // Updates will be twice per second
