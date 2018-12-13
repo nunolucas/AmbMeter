@@ -3,8 +3,6 @@
 //-----------------------------------------------------------------------------
 
 #include <Particle.h>
-#include <SparkFunBME280.h>
-#include <PietteTech_DHT.h>
 
 //-----------------------------------------------------------------------------
 // Pins used by the OLED Display (SPI)
@@ -19,6 +17,30 @@
 // I/O pin used by the DHT11
 
 #define PIN_DHT11_IO    D5
+
+//-----------------------------------------------------------------------------
+// I/O pin used by "SmartPixel" strip
+
+#define SMART_PIXEL_COUNT   3
+#define SMART_PIXEL_PIN     D6
+// #define PIXEL_TYPE WS2812B
+
+//-----------------------------------------------------------------------------
+// BME280 sensor
+
+void bme_setup();
+bool bme_get( double &temperature, double &humidity, double &pressure );
+
+//-----------------------------------------------------------------------------
+// DHT11 sensor
+
+void dht_setup();
+bool dht_get( double &temperature, double &humidity );
+
+//-----------------------------------------------------------------------------
+// NeoPixel RGB SmartPixel LED strip
+
+void neostrip_setup();
 
 //-----------------------------------------------------------------------------
 
@@ -64,10 +86,6 @@ private:
     uint8_t lux_;
     bool inc_;
 };
-
-//-----------------------------------------------------------------------------
-
-void ShowSensorDiags( BME280 &sensor );
 
 //-----------------------------------------------------------------------------
 #endif  // AMBMETER_H_INCLUDED_
